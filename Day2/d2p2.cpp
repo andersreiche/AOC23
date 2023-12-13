@@ -1,10 +1,12 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <chrono>
 
-int main() {
+using namespace std::chrono;
 
-    std::ifstream file("puzzleInput.txt");
+int run() {
+  std::ifstream file("puzzleInput.txt");
 
     std::string line;
     uint64_t  sum = 0;
@@ -69,5 +71,14 @@ int main() {
 
         sum += minRed * minGreen * minBlue;
     }
+    return sum;
+}
+
+int main() {
+    auto start = high_resolution_clock::now();
+    int sum = run();
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
     std::cout << "sum: " << sum << std::endl;
+    std::cout << "Code executed in: " << duration.count() << " microseconds." << std::endl;
   }
