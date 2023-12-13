@@ -1,0 +1,6 @@
+# Ignore compiled files
+*.exe
+*.ilk
+*.obj
+*.pdb
+.vscode/settings.json
