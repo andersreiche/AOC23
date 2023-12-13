@@ -37,7 +37,7 @@ int run() {
             size_t numberEndPos = set.find(' ', numberStartPos);
             int amount = std::stoi(set.substr(numberStartPos, numberEndPos - numberStartPos));
             size_t colorStartPos =  numberEndPos + 1;
-            size_t colorEndPos = set.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", colorStartPos);
+            size_t colorEndPos = set.find_first_not_of("bluegrdn", colorStartPos); // letters in blue, green, red.
             std::string color = set.substr(colorStartPos, colorEndPos - colorStartPos);
             std::string pair = set.substr(numberStartPos, colorEndPos - numberStartPos);
             // // Check if amount exceeds the max for the color
