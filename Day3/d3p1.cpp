@@ -11,7 +11,6 @@ bool isSymbol(char c) {
   if (!std::isalnum(c)) {
     return true;
   }
-  std::cout << c << std::endl;
   return false;
 }
 
@@ -26,9 +25,8 @@ bool isPartNo(size_t startIndex, size_t stopIndex, std::string topLine, std::str
   } else {
     stopIndex--;
   }
-  
 
-  for (int i = startIndex -1; i < stopIndex + 1; i++) {
+  for (int i = startIndex -1; i <= stopIndex + 1; i++) {
       if (isSymbol(topLine[i])) return true;
       if (isSymbol(bottomLine[i])) return true;
   }
@@ -36,17 +34,23 @@ bool isPartNo(size_t startIndex, size_t stopIndex, std::string topLine, std::str
   return false;
 }
 
-int run() {
+uint64_t run() {
+  // std::ifstream file("puzzleInput.txt");
   std::ifstream file("puzzleInput.txt");
   std::string topLine;
   std::string middleLine;
   std::string bottomLine;
-  int sum = 0;
-  std::getline(file, topLine);
+  uint64_t sum = 0;
   std::getline(file, middleLine);
+  topLine.assign(middleLine.length(), '.');
   size_t startIndex = 0;
   size_t stopIndex = 0;
-  while (std::getline(file, bottomLine)) {
+  bool loop = true;
+  while (loop) {
+    if (!std::getline(file, bottomLine)) {
+      bottomLine.assign(middleLine.length(), '.');
+      loop = false;
+    }
     while (true) {
       startIndex = middleLine.find_first_of("1234567890", startIndex);
       if (startIndex == 0) {
@@ -70,12 +74,13 @@ int run() {
     topLine = middleLine;
     middleLine = bottomLine;
   }
+  // missing last line
   return sum;
 }
 
 int main() {
   auto start = high_resolution_clock::now();
-  int result = run();
+  uint64_t result = run();
   auto stop = high_resolution_clock::now();
   auto duration = duration_cast<microseconds>(stop - start);
   std::cout << "result: " << result << std::endl;
