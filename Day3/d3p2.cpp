@@ -2,40 +2,43 @@
 #include <fstream>
 #include <string>
 #include <chrono>
+#include <unordered_map>
 
 using namespace std::chrono;
 
-
-bool isSymbol(char c) {
-  if (c == '.') return false;
-  if (!std::isalnum(c)) {
-    return true;
-  }
+bool isStar(char c) {
+  if (c == '*') return true;
   return false;
 }
 
-bool isPartNo(size_t startIndex, size_t stopIndex, std::string topLine, std::string middleLine, std::string bottomLine) {
+std::string createUniqueId(int LineNo, int i) {
+    std::string lineNoStr = "l" + std::to_string(LineNo);
+    std::string iStr = "i" + std::to_string(i);
+    return lineNoStr + iStr;
+}
+
+std::string getCog(size_t startIndex, size_t stopIndex, std::string topLine, std::string middleLine, std::string bottomLine, int lineNo) {
   if (startIndex > 0) {
-    if (isSymbol(middleLine[startIndex -1])) return true;
+    if (isStar(middleLine[startIndex -1])) return createUniqueId(lineNo, startIndex -1);
   } else {
     startIndex++;
   }
   if (stopIndex < middleLine.length() - 1) {
-    if (isSymbol(middleLine[stopIndex +1])) return true;
+    if (isStar(middleLine[stopIndex +1])) return createUniqueId(lineNo, stopIndex +1);
   } else {
     stopIndex--;
   }
 
   for (int i = startIndex -1; i <= stopIndex + 1; i++) {
-      if (isSymbol(topLine[i])) return true;
-      if (isSymbol(bottomLine[i])) return true;
+      if (isStar(topLine[i])) return createUniqueId(lineNo - 1, i);
+      if (isStar(bottomLine[i])) return createUniqueId(lineNo + 1, i);
   }
 
-  return false;
+  return "";
 }
 
 uint64_t run() {
-  // std::ifstream file("puzzleInput.txt");
+  std::unordered_map<std::string, std::list<int>> myHashTable;
   std::ifstream file("puzzleInput.txt");
   std::string topLine;
   std::string middleLine;
@@ -46,7 +49,9 @@ uint64_t run() {
   size_t startIndex = 0;
   size_t stopIndex = 0;
   bool loop = true;
+  int lineNo = 0;
   while (loop) {
+    lineNo++;
     if (!std::getline(file, bottomLine)) {
       bottomLine.assign(middleLine.length(), '.');
       loop = false;
@@ -64,15 +69,21 @@ uint64_t run() {
       if (stopIndex + 1 == std::string::npos){
         stopIndex = middleLine.length() - 1;
       } 
-      if(isPartNo(startIndex, stopIndex, topLine, middleLine, bottomLine)) {
+      std::string cogIndex = getCog(startIndex, stopIndex, topLine, middleLine, bottomLine, lineNo);
+      if(cogIndex != "") {
         std::string numberString = middleLine.substr(startIndex, stopIndex + 1 - startIndex);
-        sum += std::stoi(numberString);
+        int cogNumber = std::stoi(numberString);
+        myHashTable[cogIndex].push_back(cogNumber);
       }
       startIndex = stopIndex + 1;
-
     }
     topLine = middleLine;
     middleLine = bottomLine;
+  }
+  for (const auto& pair : myHashTable) {
+      if (pair.second.size() == 2) {
+          sum += pair.second.front() * pair.second.back();
+      }
   }
   return sum;
 }
