@@ -155,7 +155,6 @@ uint64_t run() {
       parsetype = NUMBERS;
       continue;
     } else {
-      std::cout << "Parsing: " << maptype << std::endl;
       parseMaps(maptype, line);
     }
     
