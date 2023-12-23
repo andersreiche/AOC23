@@ -4,3 +4,5 @@
 *.obj
 *.pdb
 .vscode/settings.json
+*puzzleInput.txt
+*testInput.txt
