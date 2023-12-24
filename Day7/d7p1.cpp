@@ -13,6 +13,12 @@
 
 using namespace std::chrono;
 
+struct Hand {
+  std::string hand;
+  int bid;
+  Hand(int b, const std::string& h) : bid(b), hand(h) {}
+};
+
 int getCardValue(char c) {
   std::string valueOrder = "23456789TJQKA";
   for (int i = 0; i < valueOrder.length(); ++i) {
@@ -101,17 +107,14 @@ bool leftHandIsHigher(const std::string& lhs, const std::string& rhs) {
   }
 }
 
-struct Hand {
-  std::string hand;
-  int bid;
-  Hand(int b, const std::string& h) : bid(b), hand(h) {}
-};
-
-std::vector<Hand> hands;
+bool compareHands(const Hand& lhs, const Hand& rhs) {
+    return !leftHandIsHigher(lhs.hand, rhs.hand);
+}
 
 uint64_t run() {
+  std::vector<Hand> hands;
   uint64_t result = 0;
-  std::ifstream file("testInput.txt");
+  std::ifstream file("puzzleInput.txt");
   std::string line;
   std::string hand;
   int bid = 0;
@@ -124,12 +127,18 @@ uint64_t run() {
     hands.push_back(Hand(bid, hand));
   }
 
-  
-  // 2. quicksort hands using prioritized criteria: hand type -> card 1 --> card 2 ...
-  // Compare function -> leftHandIsHigher(lhs, rhs);
-  
-  // 3. loop the hands using index = rank and multiply each bid with index.
+  // 2. sort  hands using prioritized criteria: hand type -> card 1 --> card 2 ...
+  std::sort(hands.begin(), hands.end(), compareHands);
+
+  // 3. loop the hands using rank = index + 1 and multiply each bid with index.
+  for (uint64_t i = 0; i < hands.size(); i++) {
+    hands[i].bid = (i+1) * hands[i].bid;
+  }
+
   // 4. sum up all scores.
+  for (auto hand : hands) {
+    result += hand.bid;
+  }
 
   return result;
 }
