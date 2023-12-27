@@ -12,6 +12,7 @@
 #include <regex>
 
 using namespace std::chrono;
+
 uint64_t run() {
   uint64_t result = 0;
   std::ifstream file("puzzleInput.txt");
